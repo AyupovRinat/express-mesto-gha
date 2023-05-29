@@ -3,7 +3,7 @@ const User = require('../models/user');
 module.exports.getUsers = (req, res) => {
   User
     .find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
@@ -48,7 +48,7 @@ module.exports.createUser = (req, res) => {
           message: `Переданы некорректные данные с ошибкой ${err.name}`,
         });
       } else {
-        res.status(500).send({message: `Произошла ошибка ${err.name}`});
+        res.status(500).send({ message: `Произошла ошибка ${err.name}` });
       }
     });
 };
