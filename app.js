@@ -10,8 +10,6 @@ const app = express();
 
 app.use(express.json());
 
-app.use(router);
-
 app.use((req, res, next) => {
   req.user = {
     _id: '64753796bd8e7c9b0d7b3b0f',
@@ -19,5 +17,7 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use(router);
 
 app.listen(PORT);
