@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { celebrate, Joi } = require('celebrate');
 const router = require('./routes/index');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const { celebrate, Joi } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
@@ -32,7 +32,7 @@ app.post('/signup', celebrate({
 app.use(auth);
 app.use(router);
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)
@@ -41,10 +41,6 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
-});
-
-app.use('/*', (req, res) => {
-  res.status(errors.not_found).send({ message: 'Карточка не найдена' });
 });
 
 app.listen(PORT);
