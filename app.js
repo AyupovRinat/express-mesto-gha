@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = require('./routes/index');
-const errors = require('./constants');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { celebrate, Joi } = require('celebrate');
