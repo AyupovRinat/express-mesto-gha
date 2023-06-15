@@ -57,14 +57,14 @@ module.exports.getCurrentUser = (req, res, next) => {
 module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => {
-      const userData = {
+      const dataUser = {
         name: req.body.name,
         about: req.body.about,
         avatar: req.body.avatar,
         email: req.body.email,
         password: hash,
       };
-      return User.create(userData);
+      return User.create(dataUser);
     })
     .then(({
       name, about, avatar, email, _id,
@@ -76,8 +76,7 @@ module.exports.createUser = (req, res, next) => {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       } else if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
-      }
-      else {
+      } else {
         next(err);
       }
     });
