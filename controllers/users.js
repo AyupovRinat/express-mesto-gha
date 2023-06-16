@@ -25,12 +25,16 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      throw new NotFoundError('пользователь не найден');
+      throw new Error('Notfound');
     })
-    .then((data) => res.send({ data }))
+    .then((user) => {
+      res.send(user);
+    })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ValidationError('переданы некорректные данные пользователя'));
+      if (err.message === 'Notfound') {
+        next(new NotFoundError('Пользователь не найден'));
+      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -38,14 +42,18 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.getIdUsers = (req, res, next) => {
-  User.findById(req.params.id)
+  User.findById(req.params.userId)
     .orFail(() => {
-      throw new NotFoundError('пользователь не найден');
+      throw new Error('Notfound');
     })
-    .then((data) => res.status(200).res.send({ data }))
+    .then((user) => {
+      res.send(user);
+    })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ValidationError('переданы некорректные данные пользователя'));
+      if (err.message === 'Notfound') {
+        next(new NotFoundError('Пользователь не найден'));
+      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
