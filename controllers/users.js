@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwtAuth = require('../utils/jwtAuth');
 const User = require('../models/user');
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
+const UnauthorizedError = require('../errors/unauthorizedError');
 
 module.exports.getUsers = (req, res, next) => {
   User
@@ -12,13 +13,28 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  User
-    .findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
-      res.send({ token });
+
+  User.findOne({ email }).select('+password')
+    .orFail(() => {
+      throw new UnauthorizedError('Email или пароль неверный');
+    })
+    .then((user) => Promise.all([user, bcrypt.compare(password, user.password)]))
+    .then(([user, isEqual]) => {
+      if (!isEqual) {
+        next(new UnauthorizedError('Email или пароль неверный'));
+        return;
+      }
+      const token = jwtAuth.signToken({ _id: user._id });
+      res.status(200).send({ token });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError' || !email || !password) {
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -56,26 +72,26 @@ module.exports.getCurrentUser = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
-    .then((hash) => {
-      const dataUser = {
-        name: req.body.name,
-        about: req.body.about,
-        avatar: req.body.avatar,
-        email: req.body.email,
-        password: hash,
-      };
-      return User.create(dataUser);
-    })
-    .then(({
-      name, about, avatar, email, _id,
-    }) => res.status(201).send({
-      name, about, avatar, email, _id,
+    .then((hash) => User.create({
+      email: req.body.email,
+      password: hash,
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
     }))
+    .then((user) => {
+      res.status(201).send({
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+      });
+    })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-      } else if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким email уже существует'));
+      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }

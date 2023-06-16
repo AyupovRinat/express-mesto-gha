@@ -5,7 +5,7 @@ module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new UnauthorizedError('Не удалось выполнить авторизацию'));
+    next(new UnauthorizedError('Авторизация не выполнена'));
     return;
   }
 
@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'secret-key');
   } catch (err) {
-    next(new UnauthorizedError('Не удалось выполнить авторизацию'));
+    next(new UnauthorizedError('Авторизация не выполнена'));
     return;
   }
 
