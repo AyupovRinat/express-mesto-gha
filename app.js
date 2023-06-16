@@ -1,13 +1,12 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const { celebrate, Joi, errors } = require('celebrate');
-const router = require('./routes/index');
-const { login, createUser } = require('./controllers/users');
-const NotFoundError = require('./errors/notFoundError');
-
-const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
+const mongoose = require('mongoose');
+const { celebrate, Joi, errors } = require('celebrate');
+const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
+
+const NotFoundError = require('./errors/notFoundError');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
@@ -33,11 +32,16 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(auth);
-app.use(router);
+
+app.use('/users', require('./routes/user'));
+app.use('/cards', require('./routes/card'));
+
 app.use('/', (req, res, next) => next(new NotFoundError('Страница не найдена')));
+
 app.use(errors());
 
-app.use((err, req, res) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)
@@ -46,6 +50,11 @@ app.use((err, req, res) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
+});
+
+app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`App listening on port ${PORT}`);
 });
 
 app.listen(PORT);

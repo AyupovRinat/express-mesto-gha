@@ -10,6 +10,7 @@ router.get('/:userId', celebrate({
     id: Joi.string().required().hex().length(24),
   }),
 }), getIdUsers);
+
 router.get('/me', getCurrentUser);
 
 router.patch('/me', celebrate({
