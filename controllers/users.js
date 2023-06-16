@@ -28,7 +28,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       throw new Error('Notfound');
     })
     .then((user) => {
-      res.send(user);
+      res.status(200).res.send(user);
     })
     .catch((err) => {
       if (err.message === 'Notfound') {
@@ -47,7 +47,7 @@ module.exports.getIdUsers = (req, res, next) => {
       throw new Error('Notfound');
     })
     .then((user) => {
-      res.send(user);
+      res.status(200).res.send(user);
     })
     .catch((err) => {
       if (err.message === 'Notfound') {
