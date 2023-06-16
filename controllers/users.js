@@ -4,6 +4,7 @@ const User = require('../models/user');
 const ValidationError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
+const BadRequestError = require('../errors/badRequestError');
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -41,7 +42,7 @@ module.exports.getIdUsers = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundError('пользователь не найден');
     })
-    .then((data) => res.send({ data }))
+    .then((data) => res.status(200).res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ValidationError('переданы некорректные данные пользователя'));
@@ -70,7 +71,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('переданы некорректные данные пользователя'));
+        next(new BadRequestError('переданы некорректные данные пользователя'));
       } else if (err.code === 11000) {
         next(new ConflictError('адрес электронной почты уже используется'));
       } else {
