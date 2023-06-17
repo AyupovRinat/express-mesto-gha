@@ -36,7 +36,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     });
 };
 
-module.exports.getIdUser = (req, res, next) => {
+module.exports.getIdUsers = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => {
       throw new NotFoundError('пользователь не найден');
@@ -101,7 +101,7 @@ module.exports.updateUser = (req, res, next) => {
     });
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatarUser = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     req.body,
