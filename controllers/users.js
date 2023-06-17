@@ -9,7 +9,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
     .catch(next);
@@ -24,12 +24,12 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      throw new NotFoundError('пользователь не найден');
+      throw new NotFoundError('Пользователь не найден');
     })
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('переданы некорректные данные пользователя'));
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -37,14 +37,14 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.getIdUsers = (req, res, next) => {
-  User.findById(req.params.id)
+  User.findById(req.params.userId)
     .orFail(() => {
       throw new NotFoundError('пользователь не найден');
     })
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('переданы некорректные данные пользователя'));
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -70,9 +70,9 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('переданы некорректные данные пользователя'));
+        next(new BadRequestError('Переданы некорректные данные'));
       } else if (err.code === 11000) {
-        next(new ConflictError('адрес электронной почты уже используется'));
+        next(new ConflictError('Пользователь с такой почтой уже зарегистрирован'));
       } else {
         next(err);
       }
@@ -94,7 +94,7 @@ module.exports.updateUser = (req, res, next) => {
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new BadRequestError('переданы некорректные данные пользователя'));
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -116,7 +116,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new BadRequestError('переданы некорректные данные пользователя'));
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(err);
       }
