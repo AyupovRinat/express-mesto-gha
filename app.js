@@ -6,10 +6,10 @@ const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
-const { signupValidator, signinValidator } = require('./utils/validation');
-
 const userRouter = ('./routes/user');
 const cardRouter = ('./routes/card');
+
+const { signupValidator, signinValidator } = require('./utils/validation');
 
 const { PORT = 3000 } = process.env;
 
@@ -26,6 +26,7 @@ app.post('/signin', signupValidator, login);
 app.post('/signup', signinValidator, createUser);
 
 app.use(auth);
+
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 
