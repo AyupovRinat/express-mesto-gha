@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
@@ -42,7 +42,6 @@ app.use('/', (req, res, next) => next(new NotFoundError('Страница не �
 
 app.use(errors());
 
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
