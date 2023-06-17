@@ -1,16 +1,14 @@
 const express = require('express');
 
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const { login, createUser } = require('./controllers/users');
+const bodyParser = require('body-parser');
 const auth = require('./middlewares/auth');
-
+const { login, createUser } = require('./controllers/users');
 const { signupValidator, signinValidator } = require('./utils/validation');
+const NotFoundError = require('./errors/notFoundError');
 
 const { PORT = 3000 } = process.env;
-
-const NotFoundError = require('./errors/notFoundError');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
