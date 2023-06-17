@@ -101,7 +101,7 @@ module.exports.updateUser = (req, res, next) => {
     });
 };
 
-module.exports.updateAvatarUser = (req, res, next) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     req.body,
