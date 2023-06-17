@@ -6,7 +6,7 @@ const { idUsersValidator, updateUserValidator, userAvatarValidator } = require('
 
 userRouter.get('/', getUsers);
 userRouter.get('/me', getCurrentUser);
-userRouter.get('/:userId', idUsersValidator, getIdUsers);
+userRouter.get('/:id', idUsersValidator, getIdUsers);
 userRouter.patch('/me', updateUserValidator, updateUser);
 userRouter.patch('/me/avatar', userAvatarValidator, updateUserAvatar);
 

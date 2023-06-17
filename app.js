@@ -19,8 +19,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', signupValidator, login);
-app.post('/signup', signinValidator, createUser);
+app.post('/signin', signinValidator, login);
+app.post('/signup', signupValidator, createUser);
 
 app.use(auth);
 
