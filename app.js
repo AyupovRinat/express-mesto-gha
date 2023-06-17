@@ -6,9 +6,6 @@ const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
-const userRouter = ('./routes/user');
-const cardRouter = ('./routes/card');
-
 const { signupValidator, signinValidator } = require('./utils/validation');
 
 const { PORT = 3000 } = process.env;
@@ -27,8 +24,8 @@ app.post('/signup', signinValidator, createUser);
 
 app.use(auth);
 
-app.use('/', userRouter);
-app.use('/', cardRouter);
+app.use('/users', require('./routes/user'));
+app.use('/cards', require('./routes/card'));
 
 app.use('/*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
