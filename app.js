@@ -1,13 +1,13 @@
 const express = require('express');
 
 const mongoose = require('mongoose');
-const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/user');
 const cardRouter = require('./routes/card');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
+const { signupValidator, signinValidator } = require('./utils/validation');
 const NotFoundError = require('./errors/notFoundError');
 
 const { PORT = 3000 } = process.env;
@@ -19,21 +19,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().regex(/^[a-z0-9]+@[a-z0-9]+\.[a-z]+$/i),
-    password: Joi.string().required(),
-  }),
-}), login);
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^https?:\/\/(www\.)?[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]+#?$/i),
-    email: Joi.string().required().regex(/^[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]+@[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]+\.[a-z]+$/i),
-    password: Joi.string().required(),
-  }),
-}), createUser);
+app.post('/signin', signinValidator, login);
+app.post('/signup', signupValidator, createUser);
 
 app.use(auth);
 
