@@ -1,18 +1,22 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
+const bodyParser = require('body-parser');
 
 const { PORT = 3000 } = process.env;
-const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-
 const NotFoundError = require('./errors/notFoundError');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
+mongoose.set({ runValidators: true });
+
 const app = express();
 
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
