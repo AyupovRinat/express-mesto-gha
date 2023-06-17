@@ -26,7 +26,7 @@ module.exports.createCardValidator = celebrate({
   }),
 });
 
-module.exports.cardIdValidator  = celebrate({
+module.exports.cardIdValidator = celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().required().hex().length(24),
   }),
