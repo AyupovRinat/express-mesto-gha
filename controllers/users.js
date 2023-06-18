@@ -27,13 +27,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       throw new NotFoundError('Пользователь не найден');
     })
     .then((data) => res.send({ data }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.getIdUsers = (req, res, next) => {
